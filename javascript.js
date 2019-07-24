@@ -1,8 +1,4 @@
-
-
-
-
-var firebaseConfig = {
+  var firebaseConfig = {
   apiKey: "AIzaSyD8j9IFpWnVE4KkLH2VNjTjcyntgHy-7bI",
   authDomain: "traintime-d2628.firebaseapp.com",
   databaseURL: "https://traintime-d2628.firebaseio.com",
@@ -21,45 +17,48 @@ $("#add-train-button").on("click", function(event) {
 
   var trainName = $("#train-name-input").val().trim();
   var destination = $("#destination-input").val().trim();
-  var firstTrainTime  = moment($("#first-train-input").val().trim(), "HH:mm").format("X");
+  var firstTrainTime  = $("#first-train-input").val().trim(); 
   var frequency = $("#frequency-input").val().trim();
  
   var addTrain = {
     name: trainName,
-    destination: destination,
+    finishLine: destination,
     start: firstTrainTime,
     often: frequency
-  }; rate
+  }; 
 
   database.ref().push(addTrain);
 
-  console.log(addTrain.name);
-  console.log(addTrain.destination);
-  console.log(addTrain.start);
-  console.log(addTrain.often);
+  //console.log(addTrain.name);
+  //console.log(addTrain.destination);
+  //console.log(addTrain.start);
+  //console.log(addTrain.often);
 
-  alert("New Train Added");
-
-  $("#train-name-input").val("");
-  $("#destination-input").val("");
-  $("#first-train-input").val("");
-  $("#frequency-input").val("");
+  var trainName = $("#train-name-input").val("");
+  var destination = $("#destination-input").val("");
+  var firstTrainTime = $("#first-train-input").val("");
+  var frequency = $("#frequency-input").val("");
 });
 
 database.ref().on("child_added", function(childSnapshot) {
-  console.log(childSnapshot.val());
+
+  //console.log(childSnapshot.val());
 
   var trainName = childSnapshot.val().name;
-  var destination = childSnapshot.val().destination;
+  var destination = childSnapshot.val().finishLine;
   var firstTrainTime = childSnapshot.val().start;
-  var frequency = childSnapshot.val().rate;
+  var frequency = childSnapshot.val().often;
 
-  console.log(trainName);
-  console.log(destination);
-  console.log(firstTrainTime);
-  console.log(frequency);
+  //console.log(trainName);
+  //console.log(destination);
+  //console.log(firstTrainTime);
+  //console.log(frequency);
 
-  var dayOfStart = moment.unix(firstTrainTime).format("HH:mm");
+  var numberOneTrain = moment(firstTrainTime, "HH:mm").subtract(1,"weeks");
+  var timeGap = moment().diff(moment(numberOneTrain),"minutes");
+  var timeToCome = timeGap % frequency;
+  var minutesAway = frequency - timeToCome;
+  var nextArrival = moment().add(minutesAway,"minutes").format("HH:mm");
 
   //var nextArrival = moment().diff(moment(, "X"), "months");
   
@@ -77,6 +76,6 @@ database.ref().on("child_added", function(childSnapshot) {
   );
 
 
-  $("#employee-table > tbody").append(newRow);
+  $("#train-time-table > tbody").append(newRow);
 });
 
